@@ -6,9 +6,11 @@ interface User {
   username: string;
   password: string;
   email: string;
+  pfp: string;
   following: mongoose.Schema.Types.ObjectId[];
   followers: mongoose.Schema.Types.ObjectId[];
   posts: mongoose.Schema.Types.ObjectId[];
+  likedPosts: mongoose.Schema.Types.ObjectId[];
 }
 
 const userSchema = new mongoose.Schema<User>({
@@ -29,6 +31,7 @@ const userSchema = new mongoose.Schema<User>({
     type: [mongoose.Schema.Types.ObjectId],
     default: [],
   },
+
   username: {
     type: String,
     required: [true, "Username is required"],
@@ -41,11 +44,21 @@ const userSchema = new mongoose.Schema<User>({
     required: [true, "Password is required"],
     trim: true,
   },
+  pfp: {
+    type: String,
+    trim: true,
+  },
   posts: {
     type: [mongoose.Schema.Types.ObjectId],
     default: [],
     ref: "Post",
   },
+  likedPosts: {
+    type: [mongoose.Schema.Types.ObjectId],
+    default: [],
+    ref: "Post",
+  },
+
   email: {
     type: String,
     required: true,

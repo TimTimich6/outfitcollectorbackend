@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import userRoute from "./routes/userroute";
+import postRoute from "./routes/postroute";
+
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import http from "http";
@@ -19,6 +21,8 @@ app.use(cors());
 app.use(morgan("tiny"));
 
 app.use("/api/users", userRoute);
+app.use("/api/posts", postRoute);
+
 app.use(express.static(path.join(process.cwd(), "public")));
 
 app.get("/", (req, res) => {

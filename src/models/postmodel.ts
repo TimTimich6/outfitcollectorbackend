@@ -4,7 +4,7 @@ interface Post {
   createdAt: Date;
   createdBy: mongoose.Schema.Types.ObjectId;
   b64: string;
-  likes: mongoose.Schema.Types.ObjectId[];
+  likedBy: mongoose.Schema.Types.ObjectId[];
   description: string;
 }
 
@@ -30,7 +30,7 @@ const postSchema = new mongoose.Schema<Post>({
     required: true,
     match: /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/,
   },
-  likes: {
+  likedBy: {
     type: [mongoose.Schema.Types.ObjectId],
     default: [],
   },
