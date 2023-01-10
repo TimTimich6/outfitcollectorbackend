@@ -43,7 +43,7 @@ export const io = new Server(server, { cors: { origin: "*" } });
 const uri: string = `mongodb+srv://tim:${process.env.MONGOPASS}@cluster0.k1aaw.mongodb.net/outfitapp?retryWrites=true&w=majority`;
 
 mongoose
-  .connect(uri, { autoIndex: false })
+  .connect(uri, { autoIndex: true })
   .then(() => console.log("Connected to DB"))
   .catch((err) => {
     console.error(err);

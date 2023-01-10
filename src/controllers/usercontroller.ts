@@ -1,20 +1,20 @@
 import { Request, Response } from "express";
 import User from "../models/usermodel";
-
-export async function createUser(req: any, res: any) {
+import jwt from "jsonwebtoken";
+User.deleteMany();
+export async function createUser(req: Request, res: Response) {
   const body = req.body;
   console.log(body);
-
   const { email, password, username } = body;
-
   try {
     const user = new User({ email, password, username });
-    await user.save();
-    res.json(user.toObject({}));
+    const doc = await user.save();
+    const signed = jwt.sign({ id: user._id }, <string>process.env.JWT);
+    res.setHeader("Authorization", signed);
+    res.json(doc.toJSON({}));
   } catch (error) {
     console.log(error);
-
-    res.status(401).json({ error, message: "Can't register a user with given fieldswd adawd awd wad awd ad wad awdwad " });
+    res.status(401).json({ error, message: "Can't register a user with given fields " });
   }
 }
 
@@ -27,6 +27,8 @@ export async function login(req: any, res: any) {
   try {
     const found = await User.findOne({ password, username });
     if (found) {
+      const signed = jwt.sign({ id: found._id }, <string>process.env.JWT);
+      res.setHeader("Authorization", signed);
       res.json(found.toJSON({}));
     } else throw "Either username or password is wrong";
   } catch (error) {
@@ -44,6 +46,14 @@ export async function changeId(req: any, res: any) {
     res.json({ id: newuser._id });
   } catch (error) {
     res.status(401).json({ error, message: "Failed to recreateuser user" });
+  }
+}
+
+export async function sample(req: any, res: any) {
+  try {
+    res.json({ message: "success" });
+  } catch (error) {
+    res.status(401).json({ error, message: "Failed user" });
   }
 }
 
