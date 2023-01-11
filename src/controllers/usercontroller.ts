@@ -38,7 +38,7 @@ export async function login(req: any, res: any) {
 export async function getAccount(req: any, res: any) {
   try {
     const id = req.params.id;
-    const user = await User.findOne({ _id: id }).populate("posts", "b64").select("-password -email -blocked").lean();
+    const user = await User.findOne({ _id: id }).populate("posts", "b64 likedBy").select("-password -email -blocked").lean();
     res.json(user);
   } catch (error) {
     res.status(401).json({ error, message: "Failed to find user" });
