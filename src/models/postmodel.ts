@@ -4,10 +4,9 @@ import mongoose from "mongoose";
 interface Post {
   createdAt: Date;
   createdBy: mongoose.Schema.Types.ObjectId;
-  b64: string;
   likedBy: mongoose.Schema.Types.ObjectId[];
   description: string;
-  binaryBuffer: Buffer;
+  s3location: string;
 }
 
 const postSchema = new mongoose.Schema<Post>({
@@ -27,14 +26,11 @@ const postSchema = new mongoose.Schema<Post>({
     trim: true,
     default: "",
   },
-  b64: {
+  s3location: {
     type: String,
-    required: false,
-    match: /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/,
-  },
-  binaryBuffer: {
-    type: Buffer,
     required: true,
+    trim: true,
+    lowercase: true,
   },
   likedBy: {
     type: [mongoose.Schema.Types.ObjectId],
