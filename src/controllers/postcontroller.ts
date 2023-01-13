@@ -2,10 +2,13 @@ import { Request, Response } from "express";
 import User from "../models/usermodel";
 import Post from "../models/postmodel";
 import AWS from "aws-sdk";
+import dotenv from "dotenv";
+import sharp from "sharp";
+dotenv.config();
 
 const s3 = new AWS.S3({
-  accessKeyId: "AKIA4LZKO6L6ZDQRD5NF",
-  secretAccessKey: "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",
+  accessKeyId: process.env.S3_ACCESSKEYID,
+  secretAccessKey: process.env.S3_SECRETKEY,
 });
 
 export async function createPost(req: any, res: Response) {
@@ -13,11 +16,12 @@ export async function createPost(req: any, res: Response) {
   const { b64, description } = body;
   try {
     const buffer = Buffer.from(b64, "base64");
+    const resized = await sharp(buffer).resize(300, 300, { fit: "cover" }).jpeg({ quality: 90 }).toBuffer();
     const uploadedImage = await s3
       .upload({
         Bucket: <string>process.env.S3_BUCKETNAME,
-        Key: `${Date.now().toString()}.jpg`,
-        Body: buffer,
+        Key: `${Date.now().toString()}.jpeg`,
+        Body: resized,
       })
       .promise();
     if (uploadedImage) {
@@ -35,8 +39,10 @@ export async function createPost(req: any, res: Response) {
 export async function getPost(req: any, res: Response) {
   const id = req.params.id;
   try {
-    const post = await Post.findOne({ _id: id }).populate("createdBy", "username -_id").select("-likedBy").lean();
+    const post = await Post.findOne({ _id: id }).select("-likedBy -s3location -__v").populate("createdBy", "username -_id").lean();
     if (post) {
+      console.log(post);
+
       res.json(post);
     }
     // res.json({ message: "posted", post: post._id });
