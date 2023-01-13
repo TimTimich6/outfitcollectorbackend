@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3080;
 app.use(express.json({ limit: "200mb" }));
 
 app.use(cors());
-app.use(morgan("tiny"));
+app.use(morgan("dev"));
 
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
@@ -54,3 +54,4 @@ mongoose
     console.log("connected to db");
   });
 mongoose.set("runValidators", true);
+mongoose.set("strictQuery", false);

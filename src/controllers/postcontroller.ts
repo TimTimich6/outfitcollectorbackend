@@ -45,21 +45,35 @@ export async function getPost(req: any, res: Response) {
 
       res.json(post);
     }
-    // res.json({ message: "posted", post: post._id });
   } catch (error) {
     console.log(error);
     res.status(401).json({ error, message: "Can't register a user with given fields " });
   }
 }
 
+export async function deletePost(req: any, res: Response) {
+  const id = req.params.id;
+  try {
+    const userid = req._id;
+    const post = await Post.findOne({ _id: id }).select("createdBy s3location");
+    console.log(post);
+    if (post && post?.createdBy == userid) {
+      await s3.deleteObject({ Bucket: <string>process.env.S3_BUCKETNAME, Key: post.s3location }).promise();
+      await post.delete();
+      return res.json({ message: "deleted post", oldid: id });
+    }
+    return res.status(403).json({ message: "Not authorized to delete post" });
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({ error, message: "Can't delete post" });
+  }
+}
 export async function getAll(req: any, res: Response) {
   try {
-    const posts = await Post.find({}).select("-desc -createdAt -createdBy").limit(20).lean();
+    const posts = await Post.find({}).select("-description -__v  -createdAt -createdBy").limit(20).lean();
     if (posts) {
-      // const parsed = posts.map(post=>Buffer.toString())
       res.json(posts);
     }
-    // res.json({ message: "posted", post: post._id });
   } catch (error) {
     console.log(error);
     res.status(401).json({ error, message: "Can't register a user with given fields " });
